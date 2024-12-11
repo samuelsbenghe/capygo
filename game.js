@@ -10,43 +10,90 @@
 let viewport_width = 640;
 let viewport_height = 480;
 
-// CONSTANTS
-let ATMAFONT;
-let KNEWAVEFONT;
-let LOGO;
+// Assets
+let font_atma;
+let font_knewave;
+let img_logo;
 
-// Animation
+// Global variables
+let frame_count = 0;
+let score = 0;
+let multiplier = 1;
+let game_state = "menu";
+let floor_y = 360;
+
+// Animation handler
 let jump_pressed = false;
+let current_frame;
+let animation_walk;
 let walk1;
+let walk2;
+let walk3;
+let walk4;
+let walk5;
 
 // Preload assets
 function preload() {
   // Normal assets
-  ATMAFONT = loadFont("assets/Atma-Regular.ttf");
-  KNEWAVEFONT = loadFont("assets/Knewave-Regular.ttf");
-  LOGO = loadImage("assets/logo.png");
+  font_atma = loadFont("assets/Atma-Regular.ttf");
+  font_knewave = loadFont("assets/Knewave-Regular.ttf");
+  img_logo = loadImage("assets/logo.png");
 
   // Frames
   walk1 = loadImage("frames/walk1.png");
+  walk2 = loadImage("frames/walk2.png");
+  walk3 = loadImage("frames/walk3.png");
+  walk4 = loadImage("frames/walk4.png");
+  walk5 = loadImage("frames/walk5.png");
 }
-
-// Animation handler
-let current_frame = walk1;
 
 // Classes
 class Capybara {
   constructor() {
     this.x = 50;
-    this.y = 380;
+    this.y = floor_y;
     this.width = 72;
     this.height = 60;
     this.grounded = false;
     this.gravity = 1;
     this.velocity = 0;
+    this.horizontal_speed = 5;
+    this.animation_walk = [walk1, walk2, walk3];
   }
 
   show() {
+    switch (current_frame) {
+      case walk1:
+        this.width = 72;
+        this.height = 60;
+        break;
+      case walk2:
+        this.width = 66;
+        this.height = 57;
+      case walk3:
+        this.width = 60;
+        this.height = 60;
+      case walk4:
+        this.width = 66;
+        this.height = 64;
+      case walk5:
+        this.width = 66;
+        this.height = 63;
+        break;
+    }
     image(current_frame, this.x, this.y, this.width, this.height);
+  }
+
+  die() {
+    // TODO: Implement die method
+  }
+
+  walk() {
+    current_frame = animation_walk[floor(frame_count / 4) % 5];
+  }
+
+  float() {
+    current_frame = walk1;
   }
 
   update() {
@@ -55,10 +102,13 @@ class Capybara {
 
     if (this.grounded) {
       this.velocity = 0;
+      this.walk();
+    } else {
+      this.float();
     }
 
-    if (this.y >= 380) {
-      this.y = 380;
+    if (this.y >= floor_y) {
+      this.y = floor_y;
       this.grounded = true;
     }
 
@@ -74,17 +124,12 @@ class Capybara {
   }
 }
 
-// Global variables
-let frame_count = 0;
-let score = 0;
-let multiplier = 1;
 let player = new Capybara();
-let game_state = "menu";
 
 function setup() {
-  // Set the initial frame
+  // Animation setup
   current_frame = walk1;
-  walk1.filter;
+  animation_walk = [walk1, walk2, walk3, walk4, walk5];
 
   createCanvas(viewport_width, viewport_height);
   frameRate(60);
@@ -99,7 +144,7 @@ function draw() {
 
     // Draw score
     textAlign(LEFT);
-    textFont(ATMAFONT);
+    textFont(font_atma);
     textSize(32);
     fill(255);
     text("Score: " + score + " x" + multiplier, 10, 40);
@@ -122,7 +167,7 @@ function drawMenu() {
   drawMenuBackground();
   drawMenuLogo();
   //drawMenuTitle(); // Add the title back later if I find a good place for it
-  textFont(ATMAFONT);
+  textFont(font_atma);
   textSize(44);
   fill(0);
   textAlign(CENTER);
@@ -130,7 +175,7 @@ function drawMenu() {
 }
 
 function drawMenuTitle() {
-  textFont(KNEWAVEFONT);
+  textFont(font_knewave);
   textSize(96);
   fill((v1 = 191), (v2 = 124), (v3 = 73));
   textAlign(CENTER);
@@ -138,7 +183,7 @@ function drawMenuTitle() {
 }
 
 function drawMenuLogo() {
-  image(LOGO, viewport_width / 3 - 100, viewport_height / 200, 400, 400);
+  image(img_logo, viewport_width / 3 - 100, viewport_height / 200, 400, 400);
 }
 
 function drawMenuBackground() {
@@ -151,7 +196,7 @@ function drawMenuBackground() {
 
 function drawDebugStats() {
   textAlign(RIGHT);
-  textFont(ATMAFONT);
+  textFont(font_atma);
   textSize(24);
   fill(255);
   text("Frame: " + frame_count, viewport_width - 10, 40);
