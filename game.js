@@ -37,7 +37,7 @@ let current_frame = walk1;
 class Capybara {
   constructor() {
     this.x = 50;
-    this.y = 50;
+    this.y = 380;
     this.width = 72;
     this.height = 60;
     this.grounded = false;
@@ -198,6 +198,7 @@ function gameScoreManager() {
 function keyPressed() {
   // START GAME (space)
   if (game_state == "menu" && keyCode == 32) {
+    player.y = 380;
     game_state = "playing";
     score = 0;
     multiplier = 1;
@@ -222,6 +223,20 @@ function keyPressed() {
 function keyReleased() {
   // STOP JUMP (up arrow or space or w)
   if (keyCode == 38 || keyCode == 32 || keyCode == 87) {
+    jump_pressed = false;
+  }
+}
+
+function mousePressed() {
+  // JUMP (mouse click)
+  if (game_state == "playing") {
+    jump_pressed = true;
+  }
+}
+
+function mouseReleased() {
+  // STOP JUMP (mouse click)
+  if (game_state == "playing") {
     jump_pressed = false;
   }
 }
