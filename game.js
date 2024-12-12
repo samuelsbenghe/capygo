@@ -1,31 +1,40 @@
 // ----------------------------
 // Naming conventions:
 // - Classes: PascalCase
-// - Functions: camelCase
-// - Variables: snake_case
+// - Functions and Variables: camelCase
 // - Constants: UPPERCASE
 // ----------------------------
 
+// ----------------------------
+// Assets used and their sources:
+// - Atma-Regular.ttf (https://fonts.google.com/specimen/Atma)
+// - Knewave-Regular.ttf (https://fonts.google.com/specimen/Knewave)
+// - Capybara Animation Frames (https://rainloaf.itch.io/capybara-sprite-sheet - by rainloaf)
+// ----------------------------
+
 // Configuration variables
-let viewport_width = 640;
-let viewport_height = 480;
+let viewportWidth = 640;
+let viewportHeight = 480;
 
 // Assets
-let font_atma;
-let font_knewave;
-let img_logo;
+let fontAtma;
+let fontKnewave;
+let imgLogo;
 
 // Global variables
-let frame_count = 0;
+let frameCount = 0;
 let score = 0;
 let multiplier = 1;
-let game_state = "menu";
-let floor_y = 360;
+let gameState = "menu";
+let showDebug = false;
+let starsDrawn = false;
+let stars = [];
+let floorY = 360;
 
 // Animation handler
-let jump_pressed = false;
-let current_frame;
-let animation_walk;
+let jumpPressed = false;
+let currentFrame;
+let animationWalk;
 let walk1;
 let walk2;
 let walk3;
@@ -35,9 +44,9 @@ let walk5;
 // Preload assets
 function preload() {
   // Normal assets
-  font_atma = loadFont("assets/Atma-Regular.ttf");
-  font_knewave = loadFont("assets/Knewave-Regular.ttf");
-  img_logo = loadImage("assets/logo.png");
+  fontAtma = loadFont("assets/Atma-Regular.ttf");
+  fontKnewave = loadFont("assets/Knewave-Regular.ttf");
+  imgLogo = loadImage("assets/logo.png");
 
   // Frames
   walk1 = loadImage("frames/walk1.png");
@@ -51,18 +60,17 @@ function preload() {
 class Capybara {
   constructor() {
     this.x = 50;
-    this.y = floor_y;
+    this.y = floorY;
     this.width = 72;
     this.height = 60;
     this.grounded = false;
     this.gravity = 1;
     this.velocity = 0;
-    this.horizontal_speed = 5;
-    this.animation_walk = [walk1, walk2, walk3];
+    this.horizontalSpeed = 5;
   }
 
   show() {
-    switch (current_frame) {
+    switch (currentFrame) {
       case walk1:
         this.width = 72;
         this.height = 60;
@@ -81,7 +89,7 @@ class Capybara {
         this.height = 63;
         break;
     }
-    image(current_frame, this.x, this.y, this.width, this.height);
+    image(currentFrame, this.x, this.y, this.width, this.height);
   }
 
   die() {
@@ -89,11 +97,11 @@ class Capybara {
   }
 
   walk() {
-    current_frame = animation_walk[floor(frame_count / 4) % 5];
+    currentFrame = animationWalk[floor(frameCount / 4) % 5];
   }
 
   float() {
-    current_frame = walk1;
+    currentFrame = walk1;
   }
 
   update() {
@@ -107,12 +115,12 @@ class Capybara {
       this.float();
     }
 
-    if (this.y >= floor_y) {
-      this.y = floor_y;
+    if (this.y >= floorY) {
+      this.y = floorY;
       this.grounded = true;
     }
 
-    if (jump_pressed && this.grounded) {
+    if (jumpPressed && this.grounded) {
       this.jump();
     }
   }
@@ -128,15 +136,15 @@ let player = new Capybara();
 
 function setup() {
   // Animation setup
-  current_frame = walk1;
-  animation_walk = [walk1, walk2, walk3, walk4, walk5];
+  currentFrame = walk1;
+  animationWalk = [walk1, walk2, walk3, walk4, walk5];
 
-  createCanvas(viewport_width, viewport_height);
+  createCanvas(viewportWidth, viewportHeight);
   frameRate(60);
 }
 
 function draw() {
-  if (game_state == "playing") {
+  if (gameState == "playing") {
     gameScoreManager();
 
     // Draw static elements
@@ -144,18 +152,20 @@ function draw() {
 
     // Draw score
     textAlign(LEFT);
-    textFont(font_atma);
+    textFont(fontAtma);
     textSize(32);
     fill(255);
     text("Score: " + score + " x" + multiplier, 10, 40);
 
     // Draw debug stats
-    drawDebugStats();
+    if (showDebug) {
+      drawDebugStats();
+    }
 
     // Draw player
     player.show();
     player.update();
-  } else if (game_state == "menu") {
+  } else if (gameState == "menu") {
     drawMenu();
   }
 }
@@ -167,28 +177,28 @@ function drawMenu() {
   drawMenuBackground();
   drawMenuLogo();
   //drawMenuTitle(); // Add the title back later if I find a good place for it
-  textFont(font_atma);
+  textFont(fontAtma);
   textSize(44);
   fill(0);
   textAlign(CENTER);
-  text('Press "Space" to start!', viewport_width / 2, viewport_height / 1.2);
+  text('Press "Space" to start!', viewportWidth / 2, viewportHeight / 1.2);
 }
 
 function drawMenuTitle() {
-  textFont(font_knewave);
+  textFont(fontKnewave);
   textSize(96);
   fill((v1 = 191), (v2 = 124), (v3 = 73));
   textAlign(CENTER);
-  text("Capy Go!", viewport_width / 2, viewport_height / 5);
+  text("Capy Go!", viewportWidth / 2, viewportHeight / 5);
 }
 
 function drawMenuLogo() {
-  image(img_logo, viewport_width / 3 - 100, viewport_height / 200, 400, 400);
+  image(imgLogo, viewportWidth / 3 - 100, viewportHeight / 200, 400, 400);
 }
 
 function drawMenuBackground() {
   fill(255, 255, 204);
-  rect(0, 0, viewport_width, viewport_height);
+  rect(0, 0, viewportWidth, viewportHeight);
 }
 
 // ----------------------------
@@ -196,43 +206,72 @@ function drawMenuBackground() {
 
 function drawDebugStats() {
   textAlign(RIGHT);
-  textFont(font_atma);
+  textFont(fontAtma);
   textSize(24);
   fill(255);
-  text("Frame: " + frame_count, viewport_width - 10, 40);
-  text("Player Y: " + player.y, viewport_width - 10, 70);
-  text("Player Vel: " + player.velocity, viewport_width - 10, 100);
-  text("Player Grounded: " + player.grounded, viewport_width - 10, 130);
+  text("Frame: " + frameCount, viewportWidth - 10, 40);
+  text("Player Y: " + player.y, viewportWidth - 10, 70);
+  text("Player Vel: " + player.velocity, viewportWidth - 10, 100);
+  text("Player Grounded: " + player.grounded, viewportWidth - 10, 130);
 }
 
 function drawGameStatic() {
   drawGameBackground();
+  if (!starsDrawn) {
+    setupStars();
+    starsDrawn = true;
+  } else {
+    drawStars();
+  }
   drawGameSun();
   drawGameGround();
 }
 
+function setupStars() {
+  for (let i = 0; i < 15; i++) {
+    let x = random(10, viewportWidth - 10);
+    let y = random(10, viewportHeight / 3);
+    stars.push({ x, y });
+  }
+}
+
+function drawStars() {
+  noStroke();
+  fill(255, 255, 204);
+  for (let star of stars) {
+    ellipse(star.x, star.y, 5, 5);
+  }
+}
+
 function drawGameGround() {
   fill(255, 255, 204);
-  rect(0, 380, viewport_width, 100);
+  rect(0, 380, viewportWidth, 100);
 }
 
 function drawGameSun() {
-  let sunX = viewport_width / 2;
-  let sunY = 380;
-  fill(255, 204, 0);
   noStroke();
-  ellipse(sunX, sunY, 160, 160);
+  fill(191, 124, 73);
+  arc(width / 1.3, height / 6, 60, 60, 0, HALF_PI * 3);
+  noStroke();
+  fill(255, 255, 204);
+  arc(width / 1.3, height / 6, 40, 40, 0, HALF_PI * 4);
 }
 
 function drawGameBackground() {
-  fill(135, 206, 235);
-  rect(0, 0, viewport_width, 380);
+  let startColor = color(226, 169, 116);
+  let endColor = color(255, 255, 204);
+  for (let i = 0; i < viewportHeight; i++) {
+    let inter = map(i, 0, viewportHeight, 0, 1);
+    let c = lerpColor(startColor, endColor, inter);
+    stroke(c);
+    line(0, i, viewportWidth, i);
+  }
 }
 
 function gameScoreManager() {
-  frame_count += 1;
+  frameCount += 1;
   score += multiplier;
-  if (frame_count % 120 == 0) {
+  if (frameCount % 120 == 0) {
     multiplier += 1;
   }
 }
@@ -242,46 +281,54 @@ function gameScoreManager() {
 
 function keyPressed() {
   // START GAME (space)
-  if (game_state == "menu" && keyCode == 32) {
+  if (gameState == "menu" && keyCode == 32) {
     player.y = 380;
-    game_state = "playing";
+    gameState = "playing";
     score = 0;
     multiplier = 1;
-    frame_count = 0;
+    frameCount = 0;
+    // Reset stars
+    starsDrawn = false;
+    stars = [];
   }
 
   // EXIT GAME (esc)
-  if (game_state == "playing" && keyCode == 27) {
-    game_state = "menu";
+  if (gameState == "playing" && keyCode == 27) {
+    gameState = "menu";
   }
 
   // JUMP (up arrow or space or w)
   if (
-    game_state == "playing" &&
+    gameState == "playing" &&
     (keyCode == 38 || keyCode == 32 || keyCode == 87) &&
-    frame_count > 10
+    frameCount > 10
   ) {
-    jump_pressed = true;
+    jumpPressed = true;
+  }
+
+  // DEBUG (d)
+  if (keyCode == 68) {
+    showDebug = !showDebug;
   }
 }
 
 function keyReleased() {
   // STOP JUMP (up arrow or space or w)
   if (keyCode == 38 || keyCode == 32 || keyCode == 87) {
-    jump_pressed = false;
+    jumpPressed = false;
   }
 }
 
 function mousePressed() {
   // JUMP (mouse click)
-  if (game_state == "playing") {
-    jump_pressed = true;
+  if (gameState == "playing") {
+    jumpPressed = true;
   }
 }
 
 function mouseReleased() {
   // STOP JUMP (mouse click)
-  if (game_state == "playing") {
-    jump_pressed = false;
+  if (gameState == "playing") {
+    jumpPressed = false;
   }
 }
