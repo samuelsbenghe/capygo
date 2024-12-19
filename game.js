@@ -1,5 +1,5 @@
 // ----------------------------
-// Naming conventions:
+// Using standard JavaScript naming convention:
 // - Classes: PascalCase
 // - Functions and Variables: camelCase
 // - Constants: UPPERCASE
@@ -13,40 +13,45 @@
 // ----------------------------
 
 // Configuration variables
-let viewportWidth = 640;
-let viewportHeight = 480;
+const VIEWPORT_WIDTH = 640;
+const VIEWPORT_HEIGHT = 480;
+const FLOOR_Y = 360;
 
 // Assets
-let fontAtma;
-let fontKnewave;
-let imgLogo;
+let fontAtma, fontKnewave, imgLogo;
+
+// Obstacle variables
+let obstacleOptions, obstacleCactus1;
+let lastObstacleSpawn = 0;
 
 // Global variables
-let frameCount = 0;
-let score = 0;
+let frameCount,
+  score = 0;
 let multiplier = 1;
 let gameState = "menu";
-let showDebug = false;
-let starsDrawn = false;
+let showDebug,
+  starsDrawn = false;
 let stars = [];
-let floorY = 360;
+let obstacleGroup = [];
+let fps;
 
-// Animation handler
+// Animation variables
 let jumpPressed = false;
 let currentFrame;
-let animationWalk;
-let walk1;
-let walk2;
-let walk3;
-let walk4;
-let walk5;
+let animationSpeed = 4;
+let gameSpeed = 1;
+let animationWalk, walk1, walk2, walk3, walk4, walk5;
+let animationDeath, death1, death2, death3, death4, death5;
 
 // Preload assets
 function preload() {
-  // Normal assets
+  // Assets
   fontAtma = loadFont("assets/Atma-Regular.ttf");
   fontKnewave = loadFont("assets/Knewave-Regular.ttf");
   imgLogo = loadImage("assets/logo.png");
+
+  // Obstacles
+  obstacleCactus1 = loadImage("obstacles/cactus1.png");
 
   // Frames
   walk1 = loadImage("frames/walk1.png");
@@ -60,16 +65,16 @@ function preload() {
 class Capybara {
   constructor() {
     this.x = 50;
-    this.y = floorY;
+    this.y = FLOOR_Y;
     this.width = 72;
     this.height = 60;
     this.grounded = false;
     this.gravity = 1;
     this.velocity = 0;
-    this.horizontalSpeed = 5;
   }
 
   show() {
+    // Because each frame has different sizes, I will adjust the width and height of the sprite based on the current frame.
     switch (currentFrame) {
       case walk1:
         this.width = 72;
@@ -97,17 +102,25 @@ class Capybara {
   }
 
   walk() {
-    currentFrame = animationWalk[floor(frameCount / 4) % 5];
+    // This code changes the sprite every 4 frames (division by 4)
+    // For example, if the frame is between o and 3, this formula will output 0.
+    // If the frame is between 4 and 7, it will output 1.
+    // This continues up to frame 20, at which point it will output 0 again.
+    currentFrame =
+      animationWalk[floor(frameCount / animationSpeed) % animationWalk.length];
   }
 
   float() {
-    currentFrame = walk1;
+    currentFrame = animationWalk[0];
   }
 
   update() {
+    // Positive velocity makes capybara fall down.
+    // Negative velocity makes capybara go up
     this.y += this.velocity;
     this.velocity += this.gravity;
 
+    // If grounded, set velocity to 0 and start walking animation. If not grounded, start floating animation.
     if (this.grounded) {
       this.velocity = 0;
       this.walk();
@@ -115,16 +128,19 @@ class Capybara {
       this.float();
     }
 
-    if (this.y >= floorY) {
-      this.y = floorY;
+    // Simulate floor collision by not letting this.y go below floorY
+    if (this.y >= FLOOR_Y) {
+      this.y = FLOOR_Y;
       this.grounded = true;
     }
 
+    // Jump, self-explanatory
     if (jumpPressed && this.grounded) {
       this.jump();
     }
   }
 
+  // Set negative velocity to make capybara accelerate upwards
   jump() {
     this.velocity = -20;
     this.y += this.velocity;
@@ -132,41 +148,72 @@ class Capybara {
   }
 }
 
+class Obstacle {
+  constructor() {
+    this.x = VIEWPORT_WIDTH;
+    this.y = FLOOR_Y - 70;
+    this.width = 55;
+    this.height = 156;
+    this.speed = 7 * gameSpeed;
+  }
+
+  show() {
+    image(obstacleOptions[0], this.x, this.y, this.width, this.height);
+  }
+
+  update() {
+    this.x -= this.speed;
+    this.timeAlive += 1;
+  }
+}
+
 let player = new Capybara();
 
 function setup() {
   // Animation setup
-  currentFrame = walk1;
   animationWalk = [walk1, walk2, walk3, walk4, walk5];
+  currentFrame = animationWalk[0];
 
-  createCanvas(viewportWidth, viewportHeight);
+  // Obstacle setup
+  obstacleOptions = [obstacleCactus1];
+
+  createCanvas(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
   frameRate(60);
 }
 
 function draw() {
-  if (gameState == "playing") {
-    gameScoreManager();
+  switch (gameState) {
+    case "playing":
+      gameScoreManager();
 
-    // Draw static elements
-    drawGameStatic();
+      // Draw static elements
+      drawGame();
 
-    // Draw score
-    textAlign(LEFT);
-    textFont(fontAtma);
-    textSize(32);
-    fill(255);
-    text("Score: " + score + " x" + multiplier, 10, 40);
+      // Draw obstacles
+      drawObstacles();
 
-    // Draw debug stats
-    if (showDebug) {
-      drawDebugStats();
-    }
+      // Draw score
+      textAlign(LEFT);
+      textFont(fontAtma);
+      textSize(32);
+      fill(255);
+      text("Score: " + score + " x" + multiplier, 10, 40);
 
-    // Draw player
-    player.show();
-    player.update();
-  } else if (gameState == "menu") {
-    drawMenu();
+      // Draw debug stats
+      if (showDebug) {
+        drawDebugStats();
+      }
+
+      // Draw player
+      player.show();
+      player.update();
+      break;
+
+    case "menu":
+      drawMenu();
+      break;
+    default:
+      break;
   }
 }
 
@@ -177,11 +224,7 @@ function drawMenu() {
   drawMenuBackground();
   drawMenuLogo();
   //drawMenuTitle(); // Add the title back later if I find a good place for it
-  textFont(fontAtma);
-  textSize(44);
-  fill(0);
-  textAlign(CENTER);
-  text('Press "Space" to start!', viewportWidth / 2, viewportHeight / 1.2);
+  drawMenuHint();
 }
 
 function drawMenuTitle() {
@@ -189,16 +232,24 @@ function drawMenuTitle() {
   textSize(96);
   fill((v1 = 191), (v2 = 124), (v3 = 73));
   textAlign(CENTER);
-  text("Capy Go!", viewportWidth / 2, viewportHeight / 5);
+  text("Capy Go!", VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 5);
 }
 
 function drawMenuLogo() {
-  image(imgLogo, viewportWidth / 3 - 100, viewportHeight / 200, 400, 400);
+  image(imgLogo, VIEWPORT_WIDTH / 3 - 100, VIEWPORT_HEIGHT / 200, 400, 400);
 }
 
 function drawMenuBackground() {
   fill(255, 255, 204);
-  rect(0, 0, viewportWidth, viewportHeight);
+  rect(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+}
+
+function drawMenuHint() {
+  textFont(fontAtma);
+  textSize(44);
+  fill(0);
+  textAlign(CENTER);
+  text('Press "Space" to start!', VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 1.2);
 }
 
 // ----------------------------
@@ -209,13 +260,19 @@ function drawDebugStats() {
   textFont(fontAtma);
   textSize(24);
   fill(255);
-  text("Frame: " + frameCount, viewportWidth - 10, 40);
-  text("Player Y: " + player.y, viewportWidth - 10, 70);
-  text("Player Vel: " + player.velocity, viewportWidth - 10, 100);
-  text("Player Grounded: " + player.grounded, viewportWidth - 10, 130);
+  text("Frame: " + frameCount, VIEWPORT_WIDTH - 10, 50);
+  text("Player Y: " + player.y, VIEWPORT_WIDTH - 10, 80);
+  text("Player Vel: " + player.velocity, VIEWPORT_WIDTH - 10, 110);
+  text("Player Grounded: " + player.grounded, VIEWPORT_WIDTH - 10, 140);
+  text("FPS: " + fps, VIEWPORT_WIDTH - 10, 170);
+  text("Obstacles: " + obstacleGroup.length, VIEWPORT_WIDTH - 10, 200);
+  text("Game Speed: " + gameSpeed, VIEWPORT_WIDTH - 10, 230);
+  if (frameCount % 10 == 0) {
+    fps = floor(frameRate());
+  }
 }
 
-function drawGameStatic() {
+function drawGame() {
   drawGameBackground();
   if (!starsDrawn) {
     setupStars();
@@ -225,12 +282,21 @@ function drawGameStatic() {
   }
   drawGameSun();
   drawGameGround();
+  drawGameEscHint();
+}
+
+function drawGameEscHint() {
+  textFont(fontAtma);
+  textSize(24);
+  fill(255);
+  textAlign(RIGHT);
+  text("Press 'Esc' to exit", VIEWPORT_WIDTH - 10, 25);
 }
 
 function setupStars() {
   for (let i = 0; i < 15; i++) {
-    let x = random(10, viewportWidth - 10);
-    let y = random(10, viewportHeight / 3);
+    let x = random(10, VIEWPORT_WIDTH - 10);
+    let y = random(10, VIEWPORT_HEIGHT / 3);
     stars.push({ x, y });
   }
 }
@@ -245,7 +311,7 @@ function drawStars() {
 
 function drawGameGround() {
   fill(255, 255, 204);
-  rect(0, 380, viewportWidth, 100);
+  rect(0, 380, VIEWPORT_WIDTH, 100);
 }
 
 function drawGameSun() {
@@ -260,12 +326,37 @@ function drawGameSun() {
 function drawGameBackground() {
   let startColor = color(226, 169, 116);
   let endColor = color(255, 255, 204);
-  for (let i = 0; i < viewportHeight; i++) {
-    let inter = map(i, 0, viewportHeight, 0, 1);
+  for (let i = 0; i < VIEWPORT_HEIGHT; i++) {
+    let inter = map(i, 0, VIEWPORT_HEIGHT, 0, 1);
     let c = lerpColor(startColor, endColor, inter);
     stroke(c);
-    line(0, i, viewportWidth, i);
+    line(0, i, VIEWPORT_WIDTH, i);
   }
+}
+
+function drawObstacles() {
+  for (let i = 0; i < obstacleGroup.length; i++) {
+    obstacleGroup[i].show();
+    obstacleGroup[i].update();
+  }
+  obstacleManager();
+}
+
+function obstacleManager() {
+  let spawnIntervalOptions = [30, 40, 50, 60];
+  let spawnInterval =
+    spawnIntervalOptions[floor(random(0, spawnIntervalOptions.length))];
+  if (frameCount % spawnInterval == 0 && frameCount - lastObstacleSpawn > 60) {
+    let obstacle = new Obstacle();
+    obstacleGroup.push(obstacle);
+    lastObstacleSpawn = frameCount;
+  }
+  if (obstacleGroup.length > 0 && obstacleGroup[0].x < -50) {
+    obstacleGroup.shift();
+  }
+  gameSpeed >= 2.5
+    ? (gameSpeed = 2.5)
+    : (gameSpeed = round(gameSpeed + 0.0003, 4));
 }
 
 function gameScoreManager() {
@@ -290,6 +381,10 @@ function keyPressed() {
     // Reset stars
     starsDrawn = false;
     stars = [];
+    // Reset obstacles
+    lastObstacleSpawn = 0;
+    obstacleGroup = [];
+    gameSpeed = 1;
   }
 
   // EXIT GAME (esc)
