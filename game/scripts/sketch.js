@@ -38,15 +38,29 @@ function draw() {
 }
 
 function keyPressed() {
-  // START GAME (SPACE)
+  // START GAME (space)
   if (sceneManager.getScene() === "menu" && keyCode === 32) {
     gameReset();
     sceneManager.setScene("game");
   }
 
-  // STOP GAME (ESC)
+  // STOP GAME (esc)
   if (sceneManager.getScene() === "game" && keyCode === 27) {
     sceneManager.setScene("menu");
+  }
+
+  // JUMP (up arrow or space or w)
+  if (
+    sceneManager.getScene() === "game" &&
+    (keyCode == 38 || keyCode == 32 || keyCode == 87) &&
+    frameCount > 10
+  ) {
+    jumpPressed = true;
+  }
+
+  // DEBUG (d)
+  if (keyCode == 68) {
+    showDebug = !showDebug;
   }
 }
 

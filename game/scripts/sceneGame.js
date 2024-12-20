@@ -1,6 +1,8 @@
+// Variables
 let frameCount = 0;
 let score = 0;
 let multiplier = 1;
+let showDebug = false;
 
 // Stars
 let starsDrawn = false;
