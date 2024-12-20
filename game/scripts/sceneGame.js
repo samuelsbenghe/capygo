@@ -23,6 +23,8 @@ function drawGame() {
   drawGameScore();
   // Game Logic
   gameScoreManager();
+  // Player
+  player.update();
 }
 
 // =============== GAME LOGIC ===============
@@ -41,6 +43,7 @@ function gameReset() {
   frameCount = 0;
   starsDrawn = false;
   stars = [];
+  player.reset();
 }
 
 // =============== UI ===============
