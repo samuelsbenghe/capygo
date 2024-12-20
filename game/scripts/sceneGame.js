@@ -6,7 +6,7 @@ let multiplier = 1;
 let starsDrawn = false;
 let stars = [];
 
-// Runs every frame
+// Update every frame
 function drawGame() {
   // Static Elements
   drawGameBackground();
@@ -33,6 +33,14 @@ function gameScoreManager() {
   if (frameCount % 120 == 0) {
     multiplier += 1;
   }
+}
+
+function gameReset() {
+  score = 0;
+  multiplier = 1;
+  frameCount = 0;
+  starsDrawn = false;
+  stars = [];
 }
 
 // =============== UI ===============

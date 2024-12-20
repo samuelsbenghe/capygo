@@ -25,6 +25,7 @@ function draw() {
 function keyPressed() {
   // START GAME (SPACE)
   if (sceneManager.getScene() === "menu" && keyCode === 32) {
+    gameReset();
     sceneManager.setScene("game");
   }
 
