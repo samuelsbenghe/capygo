@@ -1,9 +1,14 @@
 let sceneManager;
 
-function preload() {}
+function preload() {
+  // Load Assets
+  fontAtma = loadFont("assets/Atma-Regular.ttf");
+  fontKnewave = loadFont("assets/Knewave-Regular.ttf");
+  imgLogo = loadImage("assets/logo.png");
+}
 
 function setup() {
-  createCanvas(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+  createCanvas(CONFIG.VIEWPORT.width, CONFIG.VIEWPORT.height);
   frameRate(60);
 
   // Setup Scenes
