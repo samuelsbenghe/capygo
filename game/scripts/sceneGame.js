@@ -1,5 +1,6 @@
 // Variables
 let frameCount = 0;
+let fps = 0;
 let score = 0;
 let multiplier = 1;
 let showDebug = false;
@@ -24,6 +25,7 @@ function drawGame() {
   // UI
   drawGameEscHint();
   drawGameScore();
+  drawDebugStats();
   // Game Logic
   gameScoreManager();
   drawObstacles();
@@ -114,6 +116,24 @@ function drawGameEscHint() {
   fill(255);
   textAlign(RIGHT);
   text("Press 'Esc' to exit", CONFIG.VIEWPORT.width - 10, 25);
+}
+
+function drawDebugStats() {
+  if (!showDebug) return;
+  textAlign(RIGHT);
+  textFont(fontAtma);
+  textSize(24);
+  fill(255);
+  text("Frame: " + frameCount, CONFIG.VIEWPORT.width - 10, 50);
+  text("Player Y: " + player.y, CONFIG.VIEWPORT.width - 10, 80);
+  text("Player Vel: " + player.velocity, CONFIG.VIEWPORT.width - 10, 110);
+  text("Player Grounded: " + player.grounded, CONFIG.VIEWPORT.width - 10, 140);
+  text("FPS: " + fps, CONFIG.VIEWPORT.width - 10, 170);
+  text("Obstacles: " + obstacleGroup.length, CONFIG.VIEWPORT.width - 10, 200);
+  text("Game Speed: " + gameSpeed, CONFIG.VIEWPORT.width - 10, 230);
+  if (frameCount % 10 == 0) {
+    fps = floor(frameRate());
+  }
 }
 
 // =============== ENVIRONMENT ===============
