@@ -1,3 +1,4 @@
+let sceneManager;
 class SceneManager {
   constructor() {
     this.scenes = [];

@@ -1,5 +1,3 @@
-let sceneManager;
-
 function preload() {
   // Load Assets
   fontAtma = loadFont("assets/Atma-Regular.ttf");
@@ -25,6 +23,9 @@ function setup() {
   // Setup Animations
   animationWalk = [walk1, walk2, walk3, walk4, walk5];
   currentFrame = walk1;
+
+  // Setup Obstacles
+  obstacleOptions = [obstacle1, obstacle2];
 
   // Setup Scenes
   sceneManager = new SceneManager();

@@ -3,6 +3,7 @@ let frameCount = 0;
 let score = 0;
 let multiplier = 1;
 let showDebug = false;
+let gameSpeed = 1;
 
 // Stars
 let starsDrawn = false;
@@ -25,6 +26,8 @@ function drawGame() {
   drawGameScore();
   // Game Logic
   gameScoreManager();
+  drawObstacles();
+  collisionManager();
   // Player
   player.update();
 }
@@ -39,13 +42,60 @@ function gameScoreManager() {
   }
 }
 
+function drawObstacles() {
+  for (let i = 0; i < obstacleGroup.length; i++) {
+    obstacleGroup[i].show();
+    obstacleGroup[i].update();
+  }
+  obstacleManager();
+}
+
+function obstacleManager() {
+  let spawnIntervalOptions = [30, 40, 50, 60];
+  let spawnInterval =
+    spawnIntervalOptions[floor(random(0, spawnIntervalOptions.length))];
+  if (frameCount % spawnInterval == 0 && frameCount - lastObstacleSpawn > 60) {
+    randomObstacleIndex = floor(random(0, obstacleOptions.length));
+    let obstacle = new Obstacle(
+      (sprite = obstacleOptions[randomObstacleIndex])
+    );
+    obstacleGroup.push(obstacle);
+    lastObstacleSpawn = frameCount;
+  }
+  if (obstacleGroup.length > 0 && obstacleGroup[0].x < -50) {
+    obstacleGroup.shift();
+  }
+  gameSpeed >= 2.5
+    ? (gameSpeed = 2.5)
+    : (gameSpeed = round(gameSpeed + 0.0003, 4));
+}
+
 function gameReset() {
+  // Variables
   score = 0;
   multiplier = 1;
   frameCount = 0;
+  // Stars
   starsDrawn = false;
   stars = [];
+  // Obstacles
+  obstacleGroup = [];
+  lastObstacleSpawn = 0;
+  // Player
   player.reset();
+}
+
+function collisionManager() {
+  for (let i = 0; i < obstacleGroup.length; i++) {
+    if (
+      player.x < obstacleGroup[i].x + obstacleGroup[i].width &&
+      player.x + player.width > obstacleGroup[i].x &&
+      player.y < obstacleGroup[i].y + obstacleGroup[i].height &&
+      player.y + player.height > obstacleGroup[i].y
+    ) {
+      sceneManager.setScene("menu");
+    }
+  }
 }
 
 // =============== UI ===============
