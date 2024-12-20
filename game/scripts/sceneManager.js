@@ -2,14 +2,20 @@ class SceneManager {
   constructor() {
     this.scenes = [];
     this.currentScene = null;
+    this.currentSceneName = null;
   }
 
-  add(sceneName, sceneFunction) {
+  addScene(sceneName, sceneFunction) {
     this.scenes[sceneName] = sceneFunction;
   }
 
-  set(sceneName) {
+  setScene(sceneName) {
     this.currentScene = this.scenes[sceneName];
+    this.currentSceneName = sceneName;
+  }
+
+  getScene() {
+    return this.currentSceneName;
   }
 
   draw() {

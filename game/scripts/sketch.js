@@ -13,16 +13,26 @@ function setup() {
 
   // Setup Scenes
   sceneManager = new SceneManager();
-  sceneManager.add("game");
-  sceneManager.add("menu");
-  sceneManager.set("menu");
+  sceneManager.addScene("game", drawGame);
+  sceneManager.addScene("menu", drawMenu);
+  sceneManager.setScene("menu");
 }
 
 function draw() {
   sceneManager.draw();
 }
 
-function keyPressed() {}
+function keyPressed() {
+  // START GAME (SPACE)
+  if (sceneManager.getScene() === "menu" && keyCode === 32) {
+    sceneManager.setScene("game");
+  }
+
+  // STOP GAME (ESC)
+  if (sceneManager.getScene() === "game" && keyCode === 27) {
+    sceneManager.setScene("menu");
+  }
+}
 
 function keyReleased() {}
 
