@@ -21,7 +21,7 @@ const FLOOR_Y = 360;
 let fontAtma, fontKnewave, imgLogo;
 
 // Obstacle variables
-let obstacleOptions, obstacleCactus1;
+let obstacleOptions, obstacleCactus1, obstacleCactus2;
 let lastObstacleSpawn = 0;
 
 // Global variables
@@ -52,6 +52,7 @@ function preload() {
 
   // Obstacles
   obstacleCactus1 = loadImage("obstacles/cactus1.png");
+  obstacleCactus2 = loadImage("obstacles/cactus2.png");
 
   // Frames
   walk1 = loadImage("frames/walk1.png");
@@ -149,16 +150,17 @@ class Capybara {
 }
 
 class Obstacle {
-  constructor() {
+  constructor(sprite) {
     this.x = VIEWPORT_WIDTH;
     this.y = FLOOR_Y - 70;
     this.width = 55;
     this.height = 156;
     this.speed = 7 * gameSpeed;
+    this.sprite = sprite;
   }
 
   show() {
-    image(obstacleOptions[0], this.x, this.y, this.width, this.height);
+    image(this.sprite, this.x, this.y, this.width, this.height);
   }
 
   update() {
@@ -175,7 +177,7 @@ function setup() {
   currentFrame = animationWalk[0];
 
   // Obstacle setup
-  obstacleOptions = [obstacleCactus1];
+  obstacleOptions = [obstacleCactus1, obstacleCactus2];
 
   createCanvas(VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
   frameRate(60);
@@ -185,6 +187,7 @@ function draw() {
   switch (gameState) {
     case "playing":
       gameScoreManager();
+      collisionManager();
 
       // Draw static elements
       drawGame();
@@ -347,7 +350,10 @@ function obstacleManager() {
   let spawnInterval =
     spawnIntervalOptions[floor(random(0, spawnIntervalOptions.length))];
   if (frameCount % spawnInterval == 0 && frameCount - lastObstacleSpawn > 60) {
-    let obstacle = new Obstacle();
+    randomObstacleIndex = floor(random(0, obstacleOptions.length));
+    let obstacle = new Obstacle(
+      (sprite = obstacleOptions[randomObstacleIndex])
+    );
     obstacleGroup.push(obstacle);
     lastObstacleSpawn = frameCount;
   }
@@ -357,6 +363,19 @@ function obstacleManager() {
   gameSpeed >= 2.5
     ? (gameSpeed = 2.5)
     : (gameSpeed = round(gameSpeed + 0.0003, 4));
+}
+
+function collisionManager() {
+  for (let i = 0; i < obstacleGroup.length; i++) {
+    if (
+      player.x < obstacleGroup[i].x + obstacleGroup[i].width &&
+      player.x + player.width > obstacleGroup[i].x &&
+      player.y < obstacleGroup[i].y + obstacleGroup[i].height &&
+      player.y + player.height > obstacleGroup[i].y
+    ) {
+      gameState = "menu";
+    }
+  }
 }
 
 function gameScoreManager() {
