@@ -85,6 +85,8 @@ function gameReset() {
   lastObstacleSpawn = 0;
   // Player
   player.reset();
+  // Debug
+  showDebug = false;
 }
 
 function collisionManager() {
