@@ -18,6 +18,5 @@ class Obstacle {
 
   update() {
     this.x -= this.speed;
-    this.timeAlive += 1;
   }
 }
