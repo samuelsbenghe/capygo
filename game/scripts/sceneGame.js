@@ -91,14 +91,47 @@ function gameReset() {
 
 function collisionManager() {
   for (let i = 0; i < obstacleGroup.length; i++) {
+    // Obstacle collision box
+    let offset = 10;
+    let obstacleTopRight = obstacleGroup[i].x + obstacleGroup[i].width - offset;
+    let obstacleBottomRight = obstacleGroup[i].y + obstacleGroup[i].height;
+    let obstacleTopLeft = obstacleGroup[i].x + offset;
+    let obstacleBottomLeft = obstacleGroup[i].y;
+    // Player collision box
+    let playerTopRight = player.x + player.width;
+    let playerBottomRight = player.y + player.height;
+    let playerTopLeft = player.x;
+    let playerBottomLeft = player.y;
     if (
-      player.x < obstacleGroup[i].x + obstacleGroup[i].width &&
-      player.x + player.width > obstacleGroup[i].x &&
-      player.y < obstacleGroup[i].y + obstacleGroup[i].height &&
-      player.y + player.height > obstacleGroup[i].y
+      playerTopRight > obstacleTopLeft &&
+      playerBottomRight > obstacleBottomLeft &&
+      playerTopLeft < obstacleTopRight &&
+      playerBottomLeft < obstacleBottomRight
     ) {
       sceneManager.setScene("menu");
     }
+    // draw obstacle collision box
+    if (showDebug) {
+      stroke(255, 0, 0);
+      noFill();
+      rect(
+        obstacleTopLeft,
+        obstacleBottomLeft,
+        obstacleTopRight - obstacleTopLeft,
+        obstacleBottomRight - obstacleBottomLeft
+      );
+    }
+  }
+  // draw player collision box
+  if (showDebug) {
+    stroke(0, 255, 0);
+    noFill();
+    rect(
+      playerTopLeft,
+      playerBottomLeft,
+      playerTopRight - playerTopLeft,
+      playerBottomRight - playerBottomLeft
+    );
   }
 }
 
