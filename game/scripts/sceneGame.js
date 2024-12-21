@@ -122,17 +122,6 @@ function collisionManager() {
       );
     }
   }
-  // draw player collision box
-  if (showDebug) {
-    stroke(0, 255, 0);
-    noFill();
-    rect(
-      playerTopLeft,
-      playerBottomLeft,
-      playerTopRight - playerTopLeft,
-      playerBottomRight - playerBottomLeft
-    );
-  }
 }
 
 // =============== UI ===============
