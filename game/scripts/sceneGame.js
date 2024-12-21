@@ -10,6 +10,9 @@ let gameSpeed = 1;
 let starsDrawn = false;
 let stars = [];
 
+// High Score
+let highScore = localStorage.getItem("highScore") || 0;
+
 // Update every frame
 function drawGame() {
   // Static Elements
@@ -26,6 +29,7 @@ function drawGame() {
   drawGameEscHint();
   drawGameScore();
   drawDebugStats();
+  drawGameHighScore();
   // Game Logic
   gameScoreManager();
   drawObstacles();
@@ -73,10 +77,13 @@ function obstacleManager() {
 }
 
 function gameReset() {
+  // P5.js
+  noStroke();
   // Variables
   score = 0;
   multiplier = 1;
   frameCount = 0;
+  gameSpeed = 1;
   // Stars
   starsDrawn = false;
   stars = [];
@@ -90,6 +97,11 @@ function gameReset() {
 }
 
 function collisionManager() {
+  // Player collision box
+  let playerTopRight = player.x + player.width;
+  let playerBottomRight = player.y + player.height;
+  let playerTopLeft = player.x;
+  let playerBottomLeft = player.y;
   for (let i = 0; i < obstacleGroup.length; i++) {
     // Obstacle collision box
     let offset = 10;
@@ -97,17 +109,13 @@ function collisionManager() {
     let obstacleBottomRight = obstacleGroup[i].y + obstacleGroup[i].height;
     let obstacleTopLeft = obstacleGroup[i].x + offset;
     let obstacleBottomLeft = obstacleGroup[i].y;
-    // Player collision box
-    let playerTopRight = player.x + player.width;
-    let playerBottomRight = player.y + player.height;
-    let playerTopLeft = player.x;
-    let playerBottomLeft = player.y;
     if (
       playerTopRight > obstacleTopLeft &&
       playerBottomRight > obstacleBottomLeft &&
       playerTopLeft < obstacleTopRight &&
       playerBottomLeft < obstacleBottomRight
     ) {
+      gameReset();
       sceneManager.setScene("menu");
     }
     // draw obstacle collision box
@@ -121,6 +129,16 @@ function collisionManager() {
         obstacleBottomRight - obstacleBottomLeft
       );
     }
+  }
+  if (showDebug) {
+    stroke(0, 255, 0);
+    noFill();
+    rect(
+      playerTopLeft,
+      playerBottomLeft,
+      playerTopRight - playerTopLeft,
+      playerBottomRight - playerBottomLeft
+    );
   }
 }
 
@@ -140,6 +158,15 @@ function drawGameEscHint() {
   fill(255);
   textAlign(RIGHT);
   text("Press 'Esc' to exit", CONFIG.VIEWPORT.width - 10, 25);
+}
+
+function drawGameHighScore() {
+  textAlign(LEFT);
+  textFont(fontAtma);
+  textSize(24);
+  fill(255);
+  text("High Score: " + highScore, 10, 65);
+  updateHighScore();
 }
 
 function drawDebugStats() {
@@ -209,5 +236,13 @@ function drawStars() {
   fill(255, 255, 204);
   for (let star of stars) {
     ellipse(star.x, star.y, 5, 5);
+  }
+}
+
+// =============== SETUP HIGH SCORE ===============
+function updateHighScore() {
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem("highScore", highScore);
   }
 }
