@@ -1,7 +1,6 @@
 function preload() {
   // Load Assets
   fontAtma = loadFont("assets/Atma-Regular.ttf");
-  fontKnewave = loadFont("assets/Knewave-Regular.ttf");
   imgLogo = loadImage("assets/logo.png");
 
   // Load Obstacles

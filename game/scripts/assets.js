@@ -1,1 +1,1 @@
-let fontAtma, fontKnewave, imgLogo;
+let fontAtma, imgLogo;

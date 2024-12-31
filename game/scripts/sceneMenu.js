@@ -1,16 +1,7 @@
 function drawMenu() {
   drawMenuBackground();
   drawMenuLogo();
-  //drawMenuTitle(); // Add the title back later if I find a good place for it
   drawMenuHint();
-}
-
-function drawMenuTitle() {
-  textFont(fontKnewave);
-  textSize(96);
-  fill((v1 = 191), (v2 = 124), (v3 = 73));
-  textAlign(CENTER);
-  text("Capy Go!", CONFIG.VIEWPORT.width / 2, CONFIG.VIEWPORT.height / 5);
 }
 
 function drawMenuLogo() {
