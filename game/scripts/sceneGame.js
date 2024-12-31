@@ -115,7 +115,6 @@ function collisionManager() {
       playerTopLeft < obstacleTopRight &&
       playerBottomLeft < obstacleBottomRight
     ) {
-      gameReset();
       sceneManager.setScene("menu");
     }
     // draw obstacle collision box

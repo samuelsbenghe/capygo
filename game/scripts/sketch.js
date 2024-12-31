@@ -46,7 +46,6 @@ function keyPressed() {
 
   // STOP GAME (esc)
   if (sceneManager.getScene() === "game" && keyCode === 27) {
-    gameReset();
     sceneManager.setScene("menu");
   }
 
