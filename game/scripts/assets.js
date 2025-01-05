@@ -1,5 +1,12 @@
 let fontAtma, imgLogo;
 
+let obstacle1, obstacle2;
+let obstacleOptions;
+
+let walk1, walk2, walk3, walk4, walk5;
+let animationWalk;
+let currentFrame;
+
 function AssetPreload() {
   // Load Assets
   fontAtma = loadFont("assets/Atma-Regular.ttf");
@@ -7,7 +14,7 @@ function AssetPreload() {
 
   // Load Obstacles
   obstacle1 = loadImage("assets/cactus1.png");
-  obstacle2 = loadImage("assets/cactus1.png");
+  obstacle2 = loadImage("assets/cactus2.png");
 
   // Load Sprites
   walk1 = loadImage("assets/walk1.png");

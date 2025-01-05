@@ -1,4 +1,5 @@
 function drawMenu() {
+  noStroke();
   drawMenuBackground();
   drawMenuLogo();
   drawMenuHint();

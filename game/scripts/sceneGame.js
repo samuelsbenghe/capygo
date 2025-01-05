@@ -62,9 +62,12 @@ function obstacleManager() {
     spawnIntervalOptions[floor(random(0, spawnIntervalOptions.length))];
   if (frameCount % spawnInterval == 0 && frameCount - lastObstacleSpawn > 60) {
     randomObstacleIndex = floor(random(0, obstacleOptions.length));
+    randomObstacleScale = random(0.7, 1);
     let obstacle = new Obstacle(
-      (sprite = obstacleOptions[randomObstacleIndex])
+      (sprite = obstacleOptions[randomObstacleIndex]),
+      (scale = randomObstacleScale)
     );
+    console.log(obstacle);
     obstacleGroup.push(obstacle);
     lastObstacleSpawn = frameCount;
   }
@@ -105,10 +108,15 @@ function collisionManager() {
   for (let i = 0; i < obstacleGroup.length; i++) {
     // Obstacle collision box
     let offset = 10;
-    let obstacleTopRight = obstacleGroup[i].x + obstacleGroup[i].width - offset;
-    let obstacleBottomRight = obstacleGroup[i].y + obstacleGroup[i].height;
-    let obstacleTopLeft = obstacleGroup[i].x + offset;
-    let obstacleBottomLeft = obstacleGroup[i].y;
+    let obstacleTopRight =
+      obstacleGroup[i].getCollisionBox().x +
+      obstacleGroup[i].getCollisionBox().width -
+      offset;
+    let obstacleBottomRight =
+      obstacleGroup[i].getCollisionBox().y +
+      obstacleGroup[i].getCollisionBox().height;
+    let obstacleTopLeft = obstacleGroup[i].getCollisionBox().x + offset;
+    let obstacleBottomLeft = obstacleGroup[i].getCollisionBox().y;
     if (
       playerTopRight > obstacleTopLeft &&
       playerBottomRight > obstacleBottomLeft &&

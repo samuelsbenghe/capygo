@@ -1,7 +1,5 @@
 let jumpPressed = false;
-let animationWalk, walk1, walk2, walk3, walk4, walk5;
 let animationSpeed = 4;
-let currentFrame;
 
 class Player {
   constructor() {
