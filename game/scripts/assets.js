@@ -1,3 +1,4 @@
+// Declare variables now to store assets later in preload() function
 let fontAtma, imgLogo;
 
 let obstacle1, obstacle2;
@@ -7,6 +8,7 @@ let walk1, walk2, walk3, walk4, walk5;
 let animationWalk;
 let currentFrame;
 
+// Execute in preload() function in sketch.js
 function AssetPreload() {
   // Load Assets
   fontAtma = loadFont("assets/Atma-Regular.ttf");
@@ -24,6 +26,7 @@ function AssetPreload() {
   walk5 = loadImage("assets/walk5.png");
 }
 
+// Execute in setup() function in sketch.js
 function AssetSetup() {
   // Setup Animations
   animationWalk = [walk1, walk2, walk3, walk4, walk5];

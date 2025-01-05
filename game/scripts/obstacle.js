@@ -1,5 +1,6 @@
+// Store the current obstacles in the game. Remove obstacle when it goes offscreen.
 let obstacleGroup = [];
-let lastObstacleSpawn = 0;
+let lastObstacleSpawn = 0; // Frames since last obstacle spawn
 
 class Obstacle {
   constructor(sprite, scale = 1) {
@@ -13,6 +14,7 @@ class Obstacle {
   }
 
   show() {
+    // Compute how much to offset the obstacle vertically based on the scale
     const offsetY = (1 - this.scale) * this.height;
     image(
       this.sprite,
@@ -23,10 +25,12 @@ class Obstacle {
     );
   }
 
+  // Move the obstacle to the left every frame
   update() {
     this.x -= this.speed;
   }
 
+  // Get the (imaginary) collision box of the obstacle
   getCollisionBox() {
     const offsetY = (1 - this.scale) * this.height;
     return {

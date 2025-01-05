@@ -49,15 +49,19 @@ function gameScoreManager() {
 }
 
 function drawObstacles() {
+  // Read the obstacleGroup array and draw each obstacle in it, as well as update each of them every frame.
   for (let i = 0; i < obstacleGroup.length; i++) {
     obstacleGroup[i].show();
     obstacleGroup[i].update();
   }
+  // After drawing and updating all obstacles, check if obstacles need to be added or removed in next frame.
   obstacleManager();
 }
 
+// Function that removes or adds obstacles. Called every frame in the function above.
 function obstacleManager() {
   let spawnIntervalOptions = [30, 40, 50, 60];
+  // spawnInterval = random number between 0 and 3 inclusive
   let spawnInterval =
     spawnIntervalOptions[floor(random(0, spawnIntervalOptions.length))];
   if (frameCount % spawnInterval == 0 && frameCount - lastObstacleSpawn > 60) {
@@ -67,7 +71,6 @@ function obstacleManager() {
       (sprite = obstacleOptions[randomObstacleIndex]),
       (scale = randomObstacleScale)
     );
-    console.log(obstacle);
     obstacleGroup.push(obstacle);
     lastObstacleSpawn = frameCount;
   }
@@ -107,7 +110,7 @@ function collisionManager() {
   let playerBottomLeft = player.y;
   for (let i = 0; i < obstacleGroup.length; i++) {
     // Obstacle collision box
-    let offset = 10;
+    let offset = 10; // Offset to make the collision box width smaller
     let obstacleTopRight =
       obstacleGroup[i].getCollisionBox().x +
       obstacleGroup[i].getCollisionBox().width -
@@ -117,6 +120,7 @@ function collisionManager() {
       obstacleGroup[i].getCollisionBox().height;
     let obstacleTopLeft = obstacleGroup[i].getCollisionBox().x + offset;
     let obstacleBottomLeft = obstacleGroup[i].getCollisionBox().y;
+    // Check if player and obstacle collide, if so, reset the game
     if (
       playerTopRight > obstacleTopLeft &&
       playerBottomRight > obstacleBottomLeft &&
@@ -125,7 +129,7 @@ function collisionManager() {
     ) {
       sceneManager.setScene("menu");
     }
-    // draw obstacle collision box
+    // For each obstacle, draw collision box (red)
     if (showDebug) {
       stroke(255, 0, 0);
       noFill();
@@ -137,6 +141,7 @@ function collisionManager() {
       );
     }
   }
+  // Draw player collision box (green)
   if (showDebug) {
     stroke(0, 255, 0);
     noFill();
@@ -151,6 +156,7 @@ function collisionManager() {
 
 // =============== UI ===============
 
+// Print score at top left corner
 function drawGameScore() {
   textAlign(LEFT);
   textFont(fontAtma);
@@ -159,6 +165,7 @@ function drawGameScore() {
   text("Score: " + score + " x" + multiplier, 10, 40);
 }
 
+// Print "Press 'Esc' to exit" at top right corner
 function drawGameEscHint() {
   textFont(fontAtma);
   textSize(24);
@@ -167,6 +174,7 @@ function drawGameEscHint() {
   text("Press 'Esc' to exit", CONFIG.VIEWPORT.width - 10, 25);
 }
 
+// Print high score at top left corner, under score
 function drawGameHighScore() {
   textAlign(LEFT);
   textFont(fontAtma);
@@ -176,6 +184,7 @@ function drawGameHighScore() {
   updateHighScore();
 }
 
+// Print debug stats at top right corner, under esc hint
 function drawDebugStats() {
   if (!showDebug) return;
   textAlign(RIGHT);
@@ -189,6 +198,7 @@ function drawDebugStats() {
   text("FPS: " + fps, CONFIG.VIEWPORT.width - 10, 170);
   text("Obstacles: " + obstacleGroup.length, CONFIG.VIEWPORT.width - 10, 200);
   text("Game Speed: " + gameSpeed, CONFIG.VIEWPORT.width - 10, 230);
+  // Update FPS every 10 frames to reduce flickering
   if (frameCount % 10 == 0) {
     fps = floor(frameRate());
   }
@@ -197,16 +207,19 @@ function drawDebugStats() {
 // =============== ENVIRONMENT ===============
 
 function drawGameBackground() {
+  // Color starting from the top of the screen
   let startColor = color(
     CONFIG.COLORS.secondary.r,
     CONFIG.COLORS.secondary.g,
     CONFIG.COLORS.secondary.b
   );
+  // Color ending at the bottom of the screen
   let endColor = color(
     CONFIG.COLORS.primary.r,
     CONFIG.COLORS.primary.g,
     CONFIG.COLORS.primary.b
   );
+  // Simulate gradient background by drawing lines from top to bottom.
   for (let i = 0; i < CONFIG.VIEWPORT.width; i++) {
     let inter = map(i, 0, CONFIG.VIEWPORT.height, 0, 1);
     let c = lerpColor(startColor, endColor, inter);
@@ -216,9 +229,11 @@ function drawGameBackground() {
 }
 
 function drawGameSun() {
+  // Draw shadow of the sun
   noStroke();
   fill(191, 124, 73);
   arc(width / 1.3, height / 6, 60, 60, 0, HALF_PI * 3);
+  // Draw sun on top of shadow
   noStroke();
   fill(255, 255, 204);
   arc(width / 1.3, height / 6, 40, 40, 0, HALF_PI * 4);
@@ -230,6 +245,7 @@ function drawGameGround() {
 }
 
 // =============== STARS ===============
+// Run at the start of the game to generate stars
 function setupStars() {
   for (let i = 0; i < 15; i++) {
     let x = random(10, CONFIG.VIEWPORT.width - 10);
@@ -238,6 +254,7 @@ function setupStars() {
   }
 }
 
+// Run every frame to draw the stars
 function drawStars() {
   noStroke();
   fill(255, 255, 204);

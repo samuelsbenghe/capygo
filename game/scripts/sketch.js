@@ -13,7 +13,7 @@ function setup() {
   sceneManager = new SceneManager();
   sceneManager.addScene("game", drawGame);
   sceneManager.addScene("menu", drawMenu);
-  sceneManager.setScene("menu");
+  sceneManager.setScene("menu"); // Start game in menu scene
 }
 
 function draw() {

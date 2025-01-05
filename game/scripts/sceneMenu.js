@@ -1,5 +1,5 @@
 function drawMenu() {
-  noStroke();
+  noStroke(); // Remove the stroke in case you exited game during debug mode
   drawMenuBackground();
   drawMenuLogo();
   drawMenuHint();
@@ -20,6 +20,7 @@ function drawMenuBackground() {
   rect(0, 0, CONFIG.VIEWPORT.width, CONFIG.VIEWPORT.height);
 }
 
+// Tells the player how to start the game
 function drawMenuHint() {
   textFont(fontAtma);
   textSize(44);
