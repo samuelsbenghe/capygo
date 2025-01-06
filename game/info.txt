@@ -1,0 +1,15 @@
+Name: Edith-Samuel Sbenghe | ssben001@gold.ac.uk | 33843357
+
+Description: CapyGo!, which I published here (https://editor.p5js.org/samuelsbenghe/sketches/hGknxA0R9), is a basic game inspired by Chrome's Dinosaur Game, which is also known as Chrome Dino. Just like the original game, this is an endless running game but with a little twist! Players guide an adorable Capybara through a desert landscape, helping it jump over cacti. The game theme is based around warm colours that are easy on the eyes during long play sessions. As the game progresses, the capybara's speed gradually increases, testing the player’s reflexes and making the experience more intense and rewarding. Adding to the challenge is the built-in high-score tracker, motivating players to beat their personal bests or compete with friends for bragging rights. Whether you're a casual or a competitive gamer, CapyGo! offers a fun, fast-paced adventure that keeps you coming back for more. On a more technical side, the game takes full advantage of JavaScripts beting a multi-paradigm language. This allows me to structure game elements such as the player and obstacles using classes, while also allowing me to take a procedural approach for asset management, the game logic and drawing the graphics to the canvas.
+
+How to use programme: As the game boots up, the player will be greeted by the Menu screen. To enter the game scene, you just have to press "Space" or "LMB"(left mouse button). Inside the game scene, you can use "W", "Space", "UP ARROW" or "LMB" to jump. To exit the game, you press the "ESC" key on the keyboard. The game also has a debug mode with information about game state. You can toggle debug mode with the "D" key.
+
+Video demo: https://youtu.be/6YQGifqijXc
+
+References:
+ 1- How to implement collision detection (Link: https://www.youtube.com/watch?v=HK_oG_ev8FQ)
+ 2- localStorage with p5js (Link: https://www.youtube.com/watch?v=_SRS8b4LcZ8)
+ 3- Capybara Spritesheet (Link: https://rainloaf.itch.io/capybara-sprite-sheet)
+ 4- How to import scripts in HTML (Link: https://www.youtube.com/watch?v=d14vAVDCxEg)
+ 5- How to use JavaScript classes (Link: https://www.youtube.com/watch?v=U2vxAEiaVRY)
+ 
